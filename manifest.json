@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Mul.Live - 멀티뷰",
+  "short_name": "Mul.Live",
+  "version": "1.0.0",
+  "description": "Mul.Live에서 치지직과 아프리카TV 로그인을 사용할 수 있도록 합니다.",
+  "minimum_chrome_version": "119",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "ext@mul.live"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "homepage_url": "https://mul.live/",
+  "permissions": ["cookies"],
+  "host_permissions": [
+    "*://*.naver.com/*",
+    "*://*.afreecatv.com/*",
+    "*://*.mul.live/*"
+  ],
+  "action": {},
+  "web_accessible_resources": [
+    {
+      "resources": ["web/*"],
+      "matches": ["*://*.chzzk.naver.com/*"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "js": ["content.js"],
+      "matches": ["*://*.chzzk.naver.com/*"],
+      "exclude_globs": ["*://api.chzzk.naver.com/*"]
+    }
+  ]
+}
