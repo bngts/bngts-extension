@@ -40,6 +40,14 @@
   },
   "content_scripts": [
     {
+      "css": [
+        "hide.css"
+      ],
+      "matches": [
+        "*://*.mul.live/*"
+      ]
+    },
+    {
       "all_frames": true,
       "js": [
         "content.js"
