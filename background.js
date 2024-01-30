@@ -22,6 +22,23 @@ const COOKIES = [
 ];
 const partitionKey = { topLevelSite: "https://mul.live" };
 
+const checkPermission = async () => {
+  const granted = await chrome.permissions.contains({
+    origins: [
+      "*://*.mul.live/*",
+      "*://*.naver.com/*",
+      "*://*.chzzk.naver.com/*",
+      "*://*.afreecatv.com/*",
+    ],
+  });
+  if (!granted) {
+    chrome.tabs.create({
+      url: chrome.runtime.getURL("permission.html"),
+    });
+  }
+  return granted;
+};
+
 const setPartitonedCookie = async (cookie, url) => {
   if (cookie.partitionKey != null) {
     return;
@@ -37,7 +54,12 @@ const setPartitonedCookie = async (cookie, url) => {
   });
 };
 
+chrome.runtime.onInstalled.addListener(checkPermission);
 chrome.runtime.onStartup.addListener(async () => {
+  const granted = await checkPermission();
+  if (!granted) {
+    return;
+  }
   for (const { name, url } of COOKIES) {
     const cookie = await chrome.cookies.get({ name, url });
     if (cookie != null) {
@@ -45,6 +67,8 @@ chrome.runtime.onStartup.addListener(async () => {
     }
   }
 });
+
+chrome.permissions.onRemoved.addListener(checkPermission);
 
 chrome.action.onClicked.addListener(() => {
   chrome.tabs.create({ url: "https://mul.live/" });
