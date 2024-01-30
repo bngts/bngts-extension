@@ -1,4 +1,4 @@
-# ![로고](./icon48.png) Mul.Live
+# ![로고](./icon48.png) Mul.Live Plus
 
 > Mul.Live에서 치지직과 아프리카TV 로그인을 사용할 수 있도록 합니다. 또한, 자동으로 멀티뷰를 위해 플레이어를 최적화합니다.
 
