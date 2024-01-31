@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "Mul.Live Plus",
   "short_name": "Mul.Live",
-  "version": "1.1.1",
-  "description": "Mul.Live에서 치지직과 아프리카TV 로그인을 사용할 수 있도록 합니다.",
+  "version": "1.2.0",
+  "description": "현재 보고 있는 방송을 Mul.Live에서 함께 봅니다.",
   "minimum_chrome_version": "119",
   "browser_specific_settings": {
     "gecko": {
@@ -17,14 +17,18 @@
   },
   "homepage_url": "https://mul.live/",
   "permissions": [
-    "cookies"
+    "activeTab",
+    "cookies",
+    "storage"
   ],
   "host_permissions": [
     "*://*.naver.com/*",
     "*://*.afreecatv.com/*",
     "*://*.mul.live/*"
   ],
-  "action": {},
+  "action": {
+    "default_popup": "popup.html"
+  },
   "web_accessible_resources": [
     {
       "resources": [

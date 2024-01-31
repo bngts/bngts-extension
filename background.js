@@ -70,8 +70,11 @@ chrome.runtime.onStartup.addListener(async () => {
 
 chrome.permissions.onRemoved.addListener(checkPermission);
 
-chrome.action.onClicked.addListener(() => {
-  chrome.tabs.create({ url: "https://mul.live/" });
+chrome.storage.local.onChanged.addListener(({ streams }) => {
+  if (streams != null) {
+    chrome.action.setBadgeBackgroundColor({ color: "#737373" });
+    chrome.action.setBadgeText({ text: `${streams.newValue.length}` });
+  }
 });
 
 chrome.cookies.onChanged.addListener(async ({ cookie, removed }) => {
