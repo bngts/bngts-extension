@@ -1,6 +1,6 @@
 # ![로고](./icon48.png) Mul.Live Plus
 
-> Mul.Live에서 치지직과 아프리카TV 로그인을 사용할 수 있도록 합니다. 또한, 자동으로 멀티뷰를 위해 플레이어를 최적화합니다.
+> 현재 보고 있는 방송을 Mul.Live에서 함께 봅니다. 또한 Mul.Live에서 치지직과 아프리카TV 로그인을 사용할 수 있도록 합니다. 더불어 자동으로 멀티뷰를 위해 플레이어를 최적화합니다.
 
 [Website](https://mul.live/) | [Discord](https://discord.gg/9kq3UNKAkz) | [Chrome Web Store (Chromium, Edge, Whale 호환)](https://chromewebstore.google.com/detail/pahcphmhihleneomklgfbbneokhjiaim) | [Firefox Add-ons](https://addons.mozilla.org/addon/mullive/)
 
