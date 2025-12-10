@@ -16,5 +16,23 @@
       "urlFilter": "||mul.live",
       "resourceTypes": ["main_frame"]
     }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "x-has-extension",
+          "operation": "set",
+          "value": "1"
+        }
+      ]
+    },
+    "condition": {
+      "urlFilter": "||bngts.com",
+      "resourceTypes": ["main_frame"]
+    }
   }
 ]

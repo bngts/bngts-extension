@@ -1,10 +1,10 @@
 {
-  "name": "mullive",
+  "name": "bngts-extension",
   "version": "3.2.2",
-  "description": "현재 보고 있는 방송을 Mul.Live에서 함께 봅니다.",
+  "description": "방통실(bngts.com) 및 Mul.Live에서 치지직·SOOP 멀티뷰를 지원합니다. 로그인 연동, 플레이어 자동 최적화 기능을 제공합니다.",
   "private": true,
   "scripts": {
-    "build": "rm -rf dist && mkdir -p dist && cp -r lib *.html *.js *.css *.png manifest.json rules.json dist",
+    "build": "rm -rf dist && mkdir dist && cp -r lib *.html *.js *.css *.png manifest.json rules.json dist",
     "postversion": "manifest=\"$(jq \".version = `jq '.version' package.json`\" manifest.json)\" && echo \"$manifest\" > manifest.json",
     "publish:chrome": "google-chrome --headless --no-sandbox --disable-crash-reporter --no-crashpad --pack-extension=./dist --pack-extension-key=key.pem && node bin/upload.mjs",
     "publish:firefox": "cd dist && web-ext sign --channel listed --approval-timeout 60000"

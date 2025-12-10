@@ -143,10 +143,18 @@
   }
 
   document.getElementById("watch").addEventListener("click", () => {
+    const streams = [...streamsSet]
+      .filter((s) => !data[s]?.disabled)
+      .map((s) => {
+        if (/^[0-9a-f]{32}$/i.test(s)) {
+          return `c:${s}`;
+        } else if (/^[a-z0-9]{3,12}$/i.test(s)) {
+          return `s:${s}`;
+        }
+        return s;
+      });
     chrome.tabs.create({
-      url: `https://mul.live/${[...streamsSet]
-        .filter((s) => !data[s]?.disabled)
-        .join("/")}`,
+      url: `https://bngts.com/multiview/watch/${streams.join("/")}`,
     });
   });
 

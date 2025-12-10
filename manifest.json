@@ -1,14 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "Mul.Live Plus",
-  "short_name": "Mul.Live",
+  "name": "방통실 Plus",
+  "short_name": "방통실",
   "version": "3.2.2",
-  "description": "현재 보고 있는 방송을 Mul.Live에서 함께 봅니다.",
+  "description": "방통실(bngts.com) 및 Mul.Live에서 치지직·SOOP 멀티뷰를 지원합니다. 로그인 연동, 플레이어 자동 최적화 기능을 제공합니다.",
   "minimum_chrome_version": "121",
   "browser_specific_settings": {
     "gecko": {
       "strict_min_version": "121.0",
-      "id": "ext@mul.live"
+      "id": "ext@bngts.com"
     }
   },
   "icons": {
@@ -16,7 +16,7 @@
     "48": "icon48.png",
     "128": "icon128.png"
   },
-  "homepage_url": "https://mul.live/",
+  "homepage_url": "https://bngts.com/",
   "permissions": [
     "activeTab",
     "cookies",
@@ -26,7 +26,8 @@
   "host_permissions": [
     "*://*.naver.com/*",
     "*://*.sooplive.co.kr/*",
-    "*://*.mul.live/*"
+    "*://*.mul.live/*",
+    "*://*.bngts.com/*"
   ],
   "action": {
     "default_popup": "popup.html"
@@ -44,7 +45,11 @@
         "chzzk.js"
       ],
       "matches": [
-        "*://chzzk.naver.com/*"
+        "*://chzzk.naver.com/*",
+        "*://mul.live/*",
+        "*://www.mul.live/*",
+        "*://bngts.com/*",
+        "*://www.bngts.com/*"
       ],
       "world": "MAIN"
     },
@@ -54,7 +59,11 @@
         "soop.js"
       ],
       "matches": [
-        "*://play.sooplive.co.kr/*"
+        "*://play.sooplive.co.kr/*",
+        "*://mul.live/*",
+        "*://www.mul.live/*",
+        "*://bngts.com/*",
+        "*://www.bngts.com/*"
       ],
       "run_at": "document_start",
       "world": "MAIN"

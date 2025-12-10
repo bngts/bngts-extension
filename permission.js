@@ -3,6 +3,7 @@ document.getElementById("grant").addEventListener("click", () => {
     .request({
       origins: [
         "*://*.mul.live/*",
+        "*://*.bngts.com/*",
         "*://*.naver.com/*",
         "*://*.chzzk.naver.com/*",
         "*://*.sooplive.co.kr/*",

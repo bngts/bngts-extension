@@ -25,7 +25,10 @@ const COOKIES = [
     url: "https://login.sooplive.co.kr/app/LoginAction.php",
   },
 ];
-const partitionKey = { topLevelSite: "https://mul.live" };
+const partitionKeys = [
+  { topLevelSite: "https://mul.live" },
+  { topLevelSite: "https://bngts.com" },
+];
 
 const init = async () => {
   const granted = await checkPermission();
@@ -35,7 +38,9 @@ const init = async () => {
   for (const { name, url } of COOKIES) {
     const cookie = await chrome.cookies.get({ name, url });
     if (cookie != null) {
-      await setPartitonedCookie(cookie, url);
+      for (const partitionKey of partitionKeys) {
+        await setPartitonedCookie(cookie, url, partitionKey);
+      }
     }
   }
 };
@@ -44,6 +49,7 @@ const checkPermission = async () => {
   const granted = await chrome.permissions.contains({
     origins: [
       "*://*.mul.live/*",
+      "*://*.bngts.com/*",
       "*://*.naver.com/*",
       "*://*.chzzk.naver.com/*",
       "*://*.sooplive.co.kr/*",
@@ -57,14 +63,13 @@ const checkPermission = async () => {
   return granted;
 };
 
-const setPartitonedCookie = async (cookie, url) => {
+const setPartitonedCookie = async (cookie, url, partitionKey) => {
   if (cookie.partitionKey != null) {
     return;
   }
-  delete cookie.hostOnly;
-  delete cookie.session;
+  const { hostOnly, session, ...rest } = cookie;
   await chrome.cookies.set({
-    ...cookie,
+    ...rest,
     sameSite: chrome.cookies.SameSiteStatus.NO_RESTRICTION,
     secure: true,
     url,
@@ -92,6 +97,8 @@ chrome.cookies.onChanged.addListener(async ({ cookie, removed }) => {
     ({ name, domain }) => cookie.name === name && cookie.domain === domain
   );
   if (c != null) {
-    await setPartitonedCookie(cookie, c.url);
+    for (const partitionKey of partitionKeys) {
+      await setPartitonedCookie(cookie, c.url, partitionKey);
+    }
   }
 });

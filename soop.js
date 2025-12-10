@@ -1,6 +1,21 @@
 try {
   window.parent.location.hostname;
 } catch {
+  const ALLOWED_ORIGINS = ["https://mul.live", "https://bngts.com"];
+  const getParentOrigin = () => {
+    try {
+      const ref = document.referrer;
+      if (ref) {
+        const url = new URL(ref);
+        const origin = url.origin;
+        if (ALLOWED_ORIGINS.some((o) => origin === o || origin === o.replace("://", "://www."))) {
+          return origin;
+        }
+      }
+    } catch {}
+    return ALLOWED_ORIGINS[0];
+  };
+
   const style = document.createElement("style");
   style.textContent = `
 .embeded_mode #webplayer.chat_open #chatting_area {
@@ -39,7 +54,7 @@ try {
                 );
                 window.parent.postMessage(
                   { cmd: "showRefreshOverlay" },
-                  "https://mul.live"
+                  getParentOrigin()
                 );
                 return;
               }
