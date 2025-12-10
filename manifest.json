@@ -19,8 +19,10 @@
   "homepage_url": "https://bngts.com/",
   "permissions": [
     "activeTab",
+    "alarms",
     "cookies",
     "declarativeNetRequestWithHostAccess",
+    "notifications",
     "storage"
   ],
   "host_permissions": [

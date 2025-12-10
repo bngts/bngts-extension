@@ -7,8 +7,30 @@
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
+    <header class="header">
+      <a href="https://bngts.com" target="_blank" rel="noopener" class="header-title">
+        <img src="icon48.png" alt="" class="header-logo" />
+        <span>방통실 Plus</span>
+      </a>
+      <button id="settings-btn" class="header-btn" title="설정">⚙</button>
+    </header>
+
     <section class="section">
-      <h3 class="section-title">내 스트리머 목록</h3>
+      <div class="section-header">
+        <h3 class="section-title">내 스트리머 목록 <button id="reload-btn" class="reload-btn" title="새로고침">↻</button></h3>
+        <div class="filter-sort">
+          <select id="filter">
+            <option value="all">전체</option>
+            <option value="live">온라인</option>
+            <option value="offline">오프라인</option>
+          </select>
+          <select id="sort">
+            <option value="custom">사용자 정렬</option>
+            <option value="live">방송중 우선</option>
+            <option value="name">이름순</option>
+          </select>
+        </div>
+      </div>
       <div id="add-form">
         <select id="platform">
           <option value="s">SOOP</option>
@@ -21,7 +43,15 @@
         <button id="add-btn">추가</button>
       </div>
       <div id="streams"></div>
-      <div id="soop-warning" class="warning-message">SOOP은 최대 4개까지 동시 시청이 가능합니다.</div>
+      <div id="pagination" class="pagination">
+        <button id="prev-page">◀</button>
+        <span id="page-info">1 / 1</span>
+        <button id="next-page">▶</button>
+      </div>
+      <div id="soop-warning" class="warning-message">
+        <span>SOOP은 최대 4개까지 동시 시청이 가능합니다. (현재 <strong id="soop-count">0</strong>개 선택)</span>
+        <button id="soop-deselect" class="warning-btn">SOOP 전체해제</button>
+      </div>
       <button id="watch" class="btn-primary">
         <span class="btn-text">방통실에서 멀티뷰보기</span>
         <span class="btn-disabled-text">스트리머를 추가해주세요</span>
@@ -37,8 +67,46 @@
     </section>
 
     <footer class="license">
-      © 2025 방통실 · Based on <a href="https://github.com/jebibot/mullive" target="_blank" rel="noopener">Mul.Live Plus</a> by Jebibot
+      © 2025 <a href="https://bngts.com" target="_blank" rel="noopener">방통실</a> · Based on <a href="https://github.com/jebibot/mullive" target="_blank" rel="noopener">Mul.Live Plus</a> by Jebibot
     </footer>
+
+    <div id="tooltip" class="tooltip"></div>
+    <div id="toast" class="toast">
+      <span class="toast-spinner"></span>
+      <span class="toast-text">데이터를 불러오는 중...</span>
+    </div>
+
+    <div id="settings-modal" class="modal">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>설정</h3>
+          <button id="settings-close" class="modal-close">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="setting-item">
+            <div class="setting-label">
+              <span class="setting-title">방송 시작 알림</span>
+              <span class="setting-desc">등록된 스트리머의 방송이 시작되면 알림을 받습니다.</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="setting-notification" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <div class="setting-label">
+              <span class="setting-title">방송 미리보기</span>
+              <span class="setting-desc">스트리머에 마우스를 올리면 썸네일과 제목을 보여줍니다.</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="setting-tooltip" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script src="lib/Sortable.min.js"></script>
     <script src="popup.js"></script>
