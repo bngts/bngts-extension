@@ -1,3 +1,4 @@
+// 공통 상수 및 설정
 const COOKIES = [
   {
     name: "NID_AUT",
@@ -25,28 +26,22 @@ const COOKIES = [
     url: "https://login.sooplive.co.kr/app/LoginAction.php",
   },
 ];
+
 const partitionKeys = [
   { topLevelSite: "https://mul.live" },
   { topLevelSite: "https://bngts.com" },
 ];
 
-const init = async () => {
-  const granted = await checkPermission();
-  if (!granted) {
-    return;
-  }
-  for (const { name, url } of COOKIES) {
-    const cookie = await chrome.cookies.get({ name, url });
-    if (cookie != null) {
-      for (const partitionKey of partitionKeys) {
-        await setPartitonedCookie(cookie, url, partitionKey);
-      }
-    }
-  }
-};
+const API_BASE = "https://bngts.com/api";
+const PLATFORM_MAP = { soop: "s", chzzk: "c" };
+const CHECK_INTERVAL = 5 * 60 * 1000; // 5분
 
+// 브라우저 API 추상화 (Chrome은 chrome, Firefox는 browser 사용 가능하지만 chrome도 지원)
+const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+
+// 공통 함수들
 const checkPermission = async () => {
-  const granted = await chrome.permissions.contains({
+  const granted = await browserAPI.permissions.contains({
     origins: [
       "*://*.mul.live/*",
       "*://*.bngts.com/*",
@@ -56,35 +51,12 @@ const checkPermission = async () => {
     ],
   });
   if (!granted) {
-    chrome.tabs.create({
-      url: chrome.runtime.getURL("permission.html"),
+    browserAPI.tabs.create({
+      url: browserAPI.runtime.getURL("permission.html"),
     });
   }
   return granted;
 };
-
-const setPartitonedCookie = async (cookie, url, partitionKey) => {
-  if (cookie.partitionKey != null) {
-    return;
-  }
-  const { hostOnly, session, ...rest } = cookie;
-  await chrome.cookies.set({
-    ...rest,
-    sameSite: chrome.cookies.SameSiteStatus.NO_RESTRICTION,
-    secure: true,
-    url,
-    partitionKey,
-  });
-};
-
-chrome.runtime.onInstalled.addListener(init);
-chrome.runtime.onStartup.addListener(init);
-
-chrome.permissions.onRemoved.addListener(checkPermission);
-
-const API_BASE = "https://bngts.com/api";
-const PLATFORM_MAP = { soop: "s", chzzk: "c" };
-const CHECK_INTERVAL = 5 * 60 * 1000; // 5분
 
 const fetchLiveStatus = async (streamerIds) => {
   if (streamerIds.length === 0) return {};
@@ -112,15 +84,15 @@ const fetchLiveStatus = async (streamerIds) => {
 };
 
 const updateBadge = async () => {
-  const { liveStatusCache } = await chrome.storage.local.get({ liveStatusCache: {} });
+  const { liveStatusCache } = await browserAPI.storage.local.get({ liveStatusCache: {} });
   const liveCount = Object.values(liveStatusCache).filter((s) => s?.is_live === true).length;
 
-  chrome.action.setBadgeBackgroundColor({ color: liveCount > 0 ? "#f59e0b" : "#737373" });
-  chrome.action.setBadgeText({ text: liveCount > 0 ? `${liveCount}` : "" });
+  browserAPI.action.setBadgeBackgroundColor({ color: liveCount > 0 ? "#f59e0b" : "#737373" });
+  browserAPI.action.setBadgeText({ text: liveCount > 0 ? `${liveCount}` : "" });
 };
 
 const sendLiveNotification = async (streamerId, streamerInfo) => {
-  const { settings, data } = await chrome.storage.local.get({
+  const { settings, data } = await browserAPI.storage.local.get({
     settings: { notification: false, tooltip: true },
     data: {},
   });
@@ -130,7 +102,7 @@ const sendLiveNotification = async (streamerId, streamerInfo) => {
   const nick = data[streamerId]?.nick || streamerInfo.user_nick || streamerId;
   const platform = streamerId.startsWith("c:") ? "치지직" : "SOOP";
 
-  chrome.notifications.create(`live-${streamerId}`, {
+  browserAPI.notifications.create(`live-${streamerId}`, {
     type: "basic",
     iconUrl: "icon128.png",
     title: `${nick} 방송 시작!`,
@@ -140,7 +112,7 @@ const sendLiveNotification = async (streamerId, streamerInfo) => {
 };
 
 const updateLiveStatusCache = async () => {
-  const { streams, liveStatusCache: prevCache } = await chrome.storage.local.get({
+  const { streams, liveStatusCache: prevCache } = await browserAPI.storage.local.get({
     streams: [],
     liveStatusCache: {},
   });
@@ -158,37 +130,13 @@ const updateLiveStatusCache = async () => {
       }
     }
 
-    await chrome.storage.local.set({ liveStatusCache });
+    await browserAPI.storage.local.set({ liveStatusCache });
     await updateBadge();
   }
 };
 
-// 알람 설정 (5분 간격)
-chrome.alarms.create("checkLiveStatus", { periodInMinutes: 5 });
-
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === "checkLiveStatus") {
-    updateLiveStatusCache();
-  }
-});
-
-chrome.storage.local.onChanged.addListener(({ liveStatusCache }) => {
-  if (liveStatusCache != null) {
-    updateBadge();
-  }
-});
-
-// 초기화 시 즉시 체크
-const initBadge = async () => {
-  await updateBadge();
-  await updateLiveStatusCache();
-};
-
-chrome.runtime.onInstalled.addListener(initBadge);
-chrome.runtime.onStartup.addListener(initBadge);
-
-// 알림 클릭 시 방송 페이지로 이동
-chrome.notifications.onClicked.addListener((notificationId) => {
+// 알림 클릭 핸들러
+const handleNotificationClick = (notificationId) => {
   if (notificationId.startsWith("live-")) {
     const streamerId = notificationId.replace("live-", "");
     const platform = streamerId.startsWith("c:") ? "chzzk" : "soop";
@@ -201,12 +149,13 @@ chrome.notifications.onClicked.addListener((notificationId) => {
       url = `https://play.sooplive.co.kr/${rawId}`;
     }
 
-    chrome.tabs.create({ url });
-    chrome.notifications.clear(notificationId);
+    browserAPI.tabs.create({ url });
+    browserAPI.notifications.clear(notificationId);
   }
-});
+};
 
-chrome.cookies.onChanged.addListener(async ({ cookie, removed }) => {
+// 쿠키 변경 핸들러
+const handleCookieChange = async ({ cookie, removed }, setPartitionedCookieFn) => {
   if (removed) {
     return;
   }
@@ -215,7 +164,7 @@ chrome.cookies.onChanged.addListener(async ({ cookie, removed }) => {
   );
   if (c != null) {
     for (const partitionKey of partitionKeys) {
-      await setPartitonedCookie(cookie, c.url, partitionKey);
+      await setPartitionedCookieFn(cookie, c.url, partitionKey);
     }
   }
-});
+};

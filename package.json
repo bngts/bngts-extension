@@ -1,15 +1,19 @@
 {
   "name": "bngts-extension",
   "version": "3.2.2",
-  "description": "방통실(bngts.com) 및 Mul.Live에서 치지직·SOOP 멀티뷰를 지원합니다. 로그인 연동, 플레이어 자동 최적화 기능을 제공합니다.",
+  "description": "방통실(bngts.com) 멀티뷰에서 치지직·SOOP 로그인을 자동 연동하고 플레이어를 최적화합니다.",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && cp -r lib *.html *.js *.css *.png manifest.json rules.json dist",
-    "postversion": "manifest=\"$(jq \".version = `jq '.version' package.json`\" manifest.json)\" && echo \"$manifest\" > manifest.json",
-    "publish:chrome": "google-chrome --headless --no-sandbox --disable-crash-reporter --no-crashpad --pack-extension=./dist --pack-extension-key=key.pem && node bin/upload.mjs",
-    "publish:firefox": "cd dist && web-ext sign --channel listed --approval-timeout 60000"
+    "build": "node build.mjs",
+    "build:chrome": "node build.mjs --platform=chrome",
+    "build:firefox": "node build.mjs --platform=firefox",
+    "postversion": "node bin/sync-version.mjs",
+    "publish:chrome": "google-chrome --headless --no-sandbox --disable-crash-reporter --no-crashpad --pack-extension=./dist/chrome --pack-extension-key=key.pem && mv dist/chrome.crx dist/ 2>/dev/null || true && node bin/upload.mjs",
+    "publish:firefox": "cd dist/firefox && web-ext sign --channel listed --approval-timeout 60000"
   },
   "devDependencies": {
+    "archiver": "^7.0.1",
     "chrome-webstore-upload": "^3.2.0",
     "web-ext": "^8.9.0"
   }

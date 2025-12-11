@@ -14,7 +14,10 @@ store._headers = (token) => ({
   "x-goog-upload-protocol": "raw",
   "x-goog-upload-file-name": "extension.crx",
 });
-const res = await store.uploadExisting(fs.createReadStream("dist.crx"));
+
+// 새로운 빌드 구조: dist/chrome.crx
+const crxPath = "dist/chrome.crx";
+const res = await store.uploadExisting(fs.createReadStream(crxPath));
 store._headers = _headers;
 console.log(res);
 
