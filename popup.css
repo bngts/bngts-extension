@@ -925,3 +925,19 @@ body {
 .toggle input:checked + .toggle-slider::before {
   transform: translateX(18px);
 }
+
+.setting-select {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #475569;
+  border-radius: 6px;
+  background-color: #0f172a;
+  color: #f1f5f9;
+  font-size: 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.setting-select:focus {
+  outline: none;
+  border-color: #a855f7;
+}

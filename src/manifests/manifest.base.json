@@ -56,6 +56,26 @@
       ],
       "run_at": "document_start",
       "world": "MAIN"
+    },
+    {
+      "all_frames": true,
+      "js": [
+        "soop-isolated.js"
+      ],
+      "matches": [
+        "*://play.sooplive.co.kr/*"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "all_frames": true,
+      "js": [
+        "chzzk-isolated.js"
+      ],
+      "matches": [
+        "*://chzzk.naver.com/*"
+      ],
+      "run_at": "document_start"
     }
   ],
   "declarative_net_request": {

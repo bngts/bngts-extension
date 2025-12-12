@@ -73,10 +73,10 @@ const mergeManifests = (base, override) => {
   return result;
 };
 
-// background.js 빌드 (common + platform-specific 결합)
-const buildBackgroundJs = (platform, destDir) => {
-  const commonPath = path.join(__dirname, "src", "common", "background-common.js");
-  const platformPath = path.join(__dirname, "src", platform, `background-${platform}.js`);
+// 스크립트 빌드 (common + platform-specific 결합)
+const buildScript = (scriptName, platform, destDir) => {
+  const commonPath = path.join(__dirname, "src", "common", `${scriptName}-common.js`);
+  const platformPath = path.join(__dirname, "src", platform, `${scriptName}-${platform}.js`);
 
   let content = "";
 
@@ -91,7 +91,24 @@ const buildBackgroundJs = (platform, destDir) => {
     content += fs.readFileSync(platformPath, "utf-8");
   }
 
-  fs.writeFileSync(path.join(destDir, "background.js"), content);
+  if (content) {
+    fs.writeFileSync(path.join(destDir, `${scriptName}.js`), content);
+  }
+};
+
+// background.js 빌드
+const buildBackgroundJs = (platform, destDir) => {
+  buildScript("background", platform, destDir);
+};
+
+// soop-isolated.js 빌드
+const buildSoopIsolatedJs = (platform, destDir) => {
+  buildScript("soop-isolated", platform, destDir);
+};
+
+// chzzk-isolated.js 빌드
+const buildChzzkIsolatedJs = (platform, destDir) => {
+  buildScript("chzzk-isolated", platform, destDir);
 };
 
 // ZIP 파일 생성 (forward slash 경로 사용)
@@ -153,9 +170,15 @@ const buildPlatform = async (platform) => {
   // 4. background.js 빌드
   buildBackgroundJs(platform, distDir);
 
+  // 5. soop-isolated.js 빌드
+  buildSoopIsolatedJs(platform, distDir);
+
+  // 6. chzzk-isolated.js 빌드
+  buildChzzkIsolatedJs(platform, distDir);
+
   console.log(`  ✅ Built to dist/${platform}/`);
 
-  // 5. ZIP 파일 생성
+  // 7. ZIP 파일 생성
   const zipPath = path.join(__dirname, "dist", `${platform}.zip`);
   await createZip(distDir, zipPath);
 };

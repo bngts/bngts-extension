@@ -21,7 +21,7 @@
 
   // 설정 로드
   let { settings } = await chrome.storage.local.get({
-    settings: { notification: false, tooltip: true },
+    settings: { notification: false, tooltip: true, soopQuality: "auto", chzzkQuality: "auto" },
   });
 
   const searchStreamers = async (query) => {
@@ -612,10 +612,14 @@
   const settingsClose = document.getElementById("settings-close");
   const settingNotification = document.getElementById("setting-notification");
   const settingTooltip = document.getElementById("setting-tooltip");
+  const settingSoopQuality = document.getElementById("setting-soop-quality");
+  const settingChzzkQuality = document.getElementById("setting-chzzk-quality");
 
   // 설정 UI 초기화
   settingNotification.checked = settings.notification;
   settingTooltip.checked = settings.tooltip;
+  settingSoopQuality.value = settings.soopQuality;
+  settingChzzkQuality.value = settings.chzzkQuality;
 
   const openSettings = () => {
     settingsModal.classList.add("show");
@@ -640,5 +644,15 @@
     if (!settings.tooltip) {
       hideTooltip();
     }
+  });
+
+  settingSoopQuality.addEventListener("change", async (e) => {
+    settings.soopQuality = e.target.value;
+    await chrome.storage.local.set({ settings });
+  });
+
+  settingChzzkQuality.addEventListener("change", async (e) => {
+    settings.chzzkQuality = e.target.value;
+    await chrome.storage.local.set({ settings });
   });
 })();
