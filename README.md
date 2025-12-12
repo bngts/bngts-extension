@@ -68,14 +68,32 @@
 ### 수동 설치 (개발자 모드)
 
 1. 이 저장소를 클론합니다
-2. `npm run build` 실행
-3. Chrome: `chrome://extensions` → 개발자 모드 → 압축해제된 확장 프로그램 로드 → `dist` 폴더 선택
-4. Firefox: `about:debugging` → 임시 애드온 로드 → `dist/manifest.json` 선택
+2. `npm install` 실행
+3. `npm run build` 실행 (또는 `npm run build:chrome` / `npm run build:firefox`)
+4. Chrome: `chrome://extensions` → 개발자 모드 → 압축해제된 확장 프로그램 로드 → `dist/chrome` 폴더 선택
+5. Firefox: `about:debugging` → 임시 애드온 로드 → `dist/firefox/manifest.json` 선택
 
 ## 빌드
 
 ```bash
+# 전체 빌드 (Chrome + Firefox)
 npm run build
+
+# Chrome 전용 빌드
+npm run build:chrome
+
+# Firefox 전용 빌드
+npm run build:firefox
+```
+
+## 배포
+
+```bash
+# Chrome 웹 스토어 배포 (key.pem 필요)
+npm run publish:chrome
+
+# Firefox Add-ons 배포
+npm run publish:firefox
 ```
 
 ## 권한 설명
@@ -100,16 +118,20 @@ npm run build
 
 이 프로젝트는 [jebibot/mullive-extension](https://github.com/jebibot/mullive-extension)의 포크입니다.
 
-원본 프로젝트는 Jebibot에 의해 개발되었으며, 원본 라이센스(BSL 1.1)에 따라 1년 후 MIT 라이센스로 전환됩니다.
+원본 프로젝트는 [아르고](https://github.com/jebibot)에 의해 개발되었으며, 원본 라이센스(BSL 1.1)에 따라 1년 후 MIT 라이센스로 전환됩니다.
 
 ## 라이센스
 
 이 프로젝트는 원본 프로젝트의 라이센스를 따릅니다.
 
 원본 라이센스: Business Source License 1.1 (BSL 1.1)
-- Licensor: Jebibot
+
+- Licensor: 아르고 (Argo)
 - Licensed Work: Mul.Live Plus
 - Change License: MIT License (원저작자 커밋 기준 1년 후 자동 전환)
+- Additional Use Grant: bngts.com 서비스에 한정하여 프로덕션 사용 허가됨 ([#29](https://github.com/jebibot/mullive-extension/issues/29))
+
+이 코드를 프로덕션 환경에서 사용하려면 [원본 프로젝트](https://github.com/jebibot/mullive-extension)를 통해 별도의 허가를 받아야 합니다.
 
 자세한 내용은 [LICENSE](./LICENSE) 파일을 참조하세요.
 
