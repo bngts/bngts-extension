@@ -533,6 +533,9 @@
     }
   });
 
+  // Display version info
+  document.getElementById("version").textContent = chrome.runtime.getManifest().version;
+
   // Render initial streams and update button state
   renderStreams();
   updateStatus();
