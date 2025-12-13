@@ -7,6 +7,10 @@ import archiver from "archiver";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// package.json에서 버전 정보 가져오기
+const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, "package.json"), "utf-8"));
+const VERSION = pkg.version;
+
 // 설정
 const PLATFORMS = ["chrome", "firefox"];
 const COMMON_FILES = [
@@ -178,8 +182,8 @@ const buildPlatform = async (platform) => {
 
   console.log(`  ✅ Built to dist/${platform}/`);
 
-  // 7. ZIP 파일 생성
-  const zipPath = path.join(__dirname, "dist", `${platform}.zip`);
+  // 7. ZIP 파일 생성 (릴리즈용 파일명)
+  const zipPath = path.join(__dirname, "dist", `bngts-plus-${VERSION}-${platform}.zip`);
   await createZip(distDir, zipPath);
 };
 
@@ -199,8 +203,8 @@ const build = async () => {
   console.log("\n✨ Build complete!");
   console.log(`   - dist/chrome/     (Chrome Web Store)`);
   console.log(`   - dist/firefox/    (Firefox Add-ons)`);
-  console.log(`   - dist/chrome.zip  (Chrome 배포용)`);
-  console.log(`   - dist/firefox.zip (Firefox 배포용)`);
+  console.log(`   - dist/bngts-plus-${VERSION}-chrome.zip`);
+  console.log(`   - dist/bngts-plus-${VERSION}-firefox.zip`);
 };
 
 build().catch((err) => {
