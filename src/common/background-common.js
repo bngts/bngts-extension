@@ -63,9 +63,11 @@ const checkPermission = async () => {
 const fetchLiveStatus = async (streamerIds) => {
   if (streamerIds.length === 0) return {};
   try {
-    const res = await fetch(
-      `${API_BASE}/streamers?ids=${streamerIds.map(encodeURIComponent).join(",")}&limit=50`
-    );
+    const res = await fetch(`${API_BASE}/extension/streamers`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: streamerIds }),
+    });
     if (!res.ok) return {};
     const json = await res.json();
     const statusMap = {};

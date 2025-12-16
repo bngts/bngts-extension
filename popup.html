@@ -7,68 +7,265 @@
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <header class="header">
-      <a href="https://bngts.com" target="_blank" rel="noopener" class="header-title">
-        <img src="icon48.png" alt="" class="header-logo" />
-        <span>방통실 Plus</span>
-      </a>
-      <button id="settings-btn" class="header-btn" title="설정">⚙</button>
-    </header>
-
-    <section class="section">
-      <div class="section-header">
-        <h3 class="section-title">내 스트리머 목록 <button id="reload-btn" class="reload-btn" title="새로고침">↻</button></h3>
-        <div class="filter-sort">
-          <select id="filter">
-            <option value="all">전체</option>
-            <option value="live">온라인</option>
-            <option value="offline">오프라인</option>
-          </select>
-          <select id="sort">
-            <option value="custom">사용자 정렬</option>
-            <option value="live">방송중 우선</option>
-            <option value="name">이름순</option>
-          </select>
+    <div class="app-container">
+      <!-- 사이드바 -->
+      <nav class="sidebar">
+        <div class="sidebar-header">
+          <a href="https://bngts.com" target="_blank" rel="noopener" class="sidebar-logo">
+            <img src="icon48.png" alt="" />
+          </a>
         </div>
-      </div>
-      <div id="add-form">
-        <select id="platform">
-          <option value="s">SOOP</option>
-          <option value="c">치지직</option>
-        </select>
-        <div class="input-wrapper">
-          <input type="text" id="streamer-id" placeholder="스트리머 ID 또는 이름" autocomplete="off" />
-          <div id="suggestions"></div>
+        <ul class="sidebar-nav">
+          <li>
+            <button class="nav-item active" data-page="streamers" title="스트리머">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              <span class="nav-label">스트리머</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" data-page="groups" title="그룹">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+              </svg>
+              <span class="nav-label">그룹</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" data-page="notifications" title="알림">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              <span class="nav-label">알림</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" data-page="settings" title="설정">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+              <span class="nav-label">설정</span>
+            </button>
+          </li>
+        </ul>
+        <div class="sidebar-footer">
+          <span class="version-badge">v<span id="version"></span></span>
         </div>
-        <button id="add-btn">추가</button>
-      </div>
-      <div id="streams"></div>
-      <div id="pagination" class="pagination">
-        <button id="prev-page">◀</button>
-        <span id="page-info">1 / 1</span>
-        <button id="next-page">▶</button>
-      </div>
-      <div id="soop-warning" class="warning-message">
-        <span>SOOP은 최대 4개까지 동시 시청이 가능합니다. (현재 <strong id="soop-count">0</strong>개 선택)</span>
-        <button id="soop-deselect" class="warning-btn">SOOP 전체해제</button>
-      </div>
-      <button id="watch" class="btn-primary">
-        <span class="btn-text">방통실에서 멀티뷰보기</span>
-        <span class="btn-disabled-text">스트리머를 추가해주세요</span>
-      </button>
-    </section>
+      </nav>
 
-    <div class="divider"></div>
+      <!-- 메인 영역 -->
+      <main class="main-content">
+        <!-- 스트리머 관리 페이지 -->
+        <div id="page-streamers" class="page active">
+          <header class="page-header">
+            <h2 class="page-title">스트리머 관리</h2>
+            <button id="reload-btn" class="icon-btn" title="새로고침">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10"/>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+              </svg>
+            </button>
+          </header>
 
-    <section class="section">
-      <h3 class="section-title">멀티뷰 시작하기</h3>
-      <p class="section-desc">방통실 멀티뷰 페이지에서 직접 스트리머를 선택하여 시작할 수 있습니다.</p>
-      <button id="go-multiview" class="btn-secondary">멀티뷰 페이지로 이동</button>
-    </section>
+          <!-- 내 스트리머 목록 카드 -->
+          <div class="setting-card streamer-list-card">
+            <div class="card-header-row">
+              <h3 class="setting-card-title">내 스트리머</h3>
+              <div class="header-actions">
+                <button id="toggle-view-mode" class="icon-btn" title="보기 방식 변경">
+                  <svg id="view-mode-icon-compact" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                  <svg id="view-mode-icon-detailed" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="6" rx="1"/><line x1="14" y1="4" x2="21" y2="4"/><line x1="14" y1="8" x2="18" y2="8"/><rect x="3" y="12" width="8" height="6" rx="1"/><line x1="14" y1="13" x2="21" y2="13"/><line x1="14" y1="17" x2="18" y2="17"/></svg>
+                </button>
+                <button id="open-add-streamer-modal" class="btn-add-streamer" title="스트리머 추가">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  추가
+                </button>
+              </div>
+            </div>
 
-    <footer class="license">
-      방통실 Plus v<span id="version"></span> · Based on <a href="https://github.com/jebibot/mullive-extension" target="_blank" rel="noopener">Mul.Live Plus</a>
-    </footer>
+            <div class="filter-sort-row">
+              <select id="group-filter">
+                <option value="all">모든 그룹</option>
+              </select>
+              <select id="filter">
+                <option value="all">전체</option>
+                <option value="live">온라인</option>
+                <option value="offline">오프라인</option>
+              </select>
+              <select id="sort">
+                <option value="custom">사용자 정렬</option>
+                <option value="live">방송중 우선</option>
+                <option value="name">이름순</option>
+              </select>
+            </div>
+
+            <div id="streams-wrapper" class="streams-wrapper">
+              <div id="streams"></div>
+            </div>
+
+            <div id="pagination" class="pagination">
+              <button id="prev-page">◀</button>
+              <span id="page-info">1 / 1</span>
+              <button id="next-page">▶</button>
+            </div>
+
+            <div id="soop-warning" class="warning-message">
+              <span>SOOP은 최대 4개까지 동시 시청이 가능합니다. (현재 <strong id="soop-count">0</strong>개 선택)</span>
+              <button id="soop-deselect" class="warning-btn">SOOP 전체해제</button>
+            </div>
+
+            <!-- 멀티뷰 시작 -->
+            <div class="multiview-section">
+              <button id="open-multiview-selected" class="btn-multiview">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                <span class="btn-multiview-text">멀티뷰 시작</span>
+                <span class="btn-multiview-count" id="multiview-count"></span>
+              </button>
+              <p class="multiview-hint" id="multiview-hint">체크된 스트리머가 없습니다</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 그룹 관리 페이지 -->
+        <div id="page-groups" class="page">
+          <header class="page-header">
+            <h2 class="page-title">그룹 관리</h2>
+            <button id="add-group-btn" class="icon-btn" title="그룹 추가">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </button>
+          </header>
+
+          <div class="setting-card">
+            <h3 class="setting-card-title">내 그룹</h3>
+            <p class="setting-card-desc">스트리머를 그룹으로 분류하여 관리하세요. 그룹 단위로 한 번에 켜거나 끌 수 있습니다.</p>
+
+            <div id="groups-list" class="groups-list"></div>
+
+            <div id="no-groups" class="empty-state-inline">
+              <p>등록된 그룹이 없습니다</p>
+              <button id="create-first-group" class="btn-secondary btn-sm">첫 그룹 만들기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 알림 페이지 -->
+        <div id="page-notifications" class="page">
+          <header class="page-header">
+            <h2 class="page-title">알림</h2>
+          </header>
+
+          <!-- 서브 탭 -->
+          <div class="sub-tabs">
+            <button class="sub-tab active" data-subtab="history">히스토리</button>
+            <button class="sub-tab" data-subtab="notif-settings">설정</button>
+          </div>
+
+          <!-- 히스토리 서브탭 -->
+          <div id="subtab-history" class="subtab-content active">
+            <div class="setting-card">
+              <div class="card-header-row">
+                <h3 class="setting-card-title">알림 히스토리</h3>
+                <div class="notification-actions">
+                  <button id="mark-all-read" class="text-btn" title="전체 읽음">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  </button>
+                  <button id="clear-all-notifications" class="text-btn" title="전체 삭제">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div id="notification-history" class="notification-history"></div>
+            </div>
+          </div>
+
+          <!-- 설정 서브탭 -->
+          <div id="subtab-notif-settings" class="subtab-content">
+            <div class="setting-card">
+              <h3 class="setting-card-title">알림 설정</h3>
+              <div class="setting-item">
+                <div class="setting-label">
+                  <span class="setting-title">방송 시작 알림</span>
+                  <span class="setting-desc">등록된 스트리머의 방송이 시작되면 알림을 받습니다.</span>
+                </div>
+                <label class="toggle">
+                  <input type="checkbox" id="setting-notification" />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-card">
+              <h3 class="setting-card-title">스트리머별 알림</h3>
+              <p class="setting-card-desc">특정 스트리머의 알림만 켜거나 끌 수 있습니다.</p>
+              <div id="notification-streamers" class="notification-streamers"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 설정 페이지 -->
+        <div id="page-settings" class="page">
+          <header class="page-header">
+            <h2 class="page-title">설정</h2>
+          </header>
+
+          <div class="setting-card">
+            <h3 class="setting-card-title">선호 화질</h3>
+            <p class="setting-card-desc">방송에서 지원하는 경우에만 적용됩니다.</p>
+            <div class="setting-item">
+              <div class="setting-label">
+                <span class="setting-title">SOOP</span>
+              </div>
+              <select id="setting-soop-quality" class="setting-select">
+                <option value="1440p">1440p</option>
+                <option value="1080p">1080p</option>
+                <option value="720p">720p</option>
+                <option value="540p">540p</option>
+                <option value="360p">360p</option>
+                <option value="auto" selected>자동</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <div class="setting-label">
+                <span class="setting-title">치지직</span>
+              </div>
+              <select id="setting-chzzk-quality" class="setting-select">
+                <option value="1080p">1080p</option>
+                <option value="720p">720p</option>
+                <option value="480p">480p</option>
+                <option value="360p">360p</option>
+                <option value="auto" selected>자동</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-card">
+            <h3 class="setting-card-title">정보</h3>
+            <div class="info-item">
+              <span>버전</span>
+              <span id="version-info"></span>
+            </div>
+            <div class="info-item">
+              <span>기반</span>
+              <a href="https://github.com/jebibot/mullive-extension" target="_blank" rel="noopener">Mul.Live Plus</a>
+            </div>
+            <div class="info-item">
+              <span>홈페이지</span>
+              <a href="https://bngts.com" target="_blank" rel="noopener">bngts.com</a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
 
     <div id="tooltip" class="tooltip"></div>
     <div id="toast" class="toast">
@@ -76,60 +273,95 @@
       <span class="toast-text">데이터를 불러오는 중...</span>
     </div>
 
-    <div id="settings-modal" class="modal">
+    <!-- 그룹 추가/편집 모달 -->
+    <div id="group-modal" class="modal">
       <div class="modal-backdrop"></div>
       <div class="modal-content">
         <div class="modal-header">
-          <h3>설정</h3>
-          <button id="settings-close" class="modal-close">✕</button>
+          <h3 id="group-modal-title">새 그룹 만들기</h3>
+          <button id="group-modal-close" class="modal-close">✕</button>
         </div>
         <div class="modal-body">
-          <div class="setting-item">
-            <div class="setting-label">
-              <span class="setting-title">방송 시작 알림</span>
-              <span class="setting-desc">등록된 스트리머의 방송이 시작되면 알림을 받습니다.</span>
-            </div>
-            <label class="toggle">
-              <input type="checkbox" id="setting-notification" />
-              <span class="toggle-slider"></span>
-            </label>
+          <div class="form-group">
+            <label for="group-name">그룹 이름</label>
+            <input type="text" id="group-name" placeholder="예: 게임, 먹방, 음악" />
           </div>
-          <div class="setting-item">
-            <div class="setting-label">
-              <span class="setting-title">방송 미리보기</span>
-              <span class="setting-desc">스트리머에 마우스를 올리면 썸네일과 제목을 보여줍니다.</span>
+          <div class="form-group">
+            <label>그룹 색상</label>
+            <div class="color-picker">
+              <button class="color-option selected" data-color="#ef4444" style="background-color: #ef4444"></button>
+              <button class="color-option" data-color="#f97316" style="background-color: #f97316"></button>
+              <button class="color-option" data-color="#eab308" style="background-color: #eab308"></button>
+              <button class="color-option" data-color="#22c55e" style="background-color: #22c55e"></button>
+              <button class="color-option" data-color="#06b6d4" style="background-color: #06b6d4"></button>
+              <button class="color-option" data-color="#3b82f6" style="background-color: #3b82f6"></button>
+              <button class="color-option" data-color="#8b5cf6" style="background-color: #8b5cf6"></button>
+              <button class="color-option" data-color="#ec4899" style="background-color: #ec4899"></button>
             </div>
-            <label class="toggle">
-              <input type="checkbox" id="setting-tooltip" />
-              <span class="toggle-slider"></span>
-            </label>
           </div>
-          <div class="setting-item">
-            <div class="setting-label">
-              <span class="setting-title">SOOP 선호 화질</span>
-              <span class="setting-desc">방송에서 지원하는 경우에만 적용됩니다.</span>
-            </div>
-            <select id="setting-soop-quality" class="setting-select">
-              <option value="1440p">1440p</option>
-              <option value="1080p">1080p</option>
-              <option value="720p">720p</option>
-              <option value="540p">540p</option>
-              <option value="360p">360p</option>
-              <option value="auto" selected>자동</option>
-            </select>
+          <div class="form-group">
+            <label>스트리머 선택</label>
+            <div id="group-streamers" class="group-streamers-select"></div>
           </div>
-          <div class="setting-item">
-            <div class="setting-label">
-              <span class="setting-title">치지직 선호 화질</span>
-              <span class="setting-desc">방송에서 지원하는 경우에만 적용됩니다.</span>
+        </div>
+        <div class="modal-footer">
+          <button id="group-delete" class="btn-danger hidden">삭제</button>
+          <div class="modal-actions">
+            <button id="group-cancel" class="btn-secondary btn-sm">취소</button>
+            <button id="group-save" class="btn-primary btn-sm">저장</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 스트리머 추가 모달 -->
+    <div id="add-streamer-modal" class="modal">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>스트리머 추가</h3>
+          <button id="add-streamer-modal-close" class="modal-close">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label>플랫폼</label>
+            <div class="platform-selector">
+              <button class="platform-option active" data-platform="s">
+                <span class="platform-badge soop">SOOP</span>
+              </button>
+              <button class="platform-option" data-platform="c">
+                <span class="platform-badge chzzk">치지직</span>
+              </button>
+              <button class="platform-option" data-platform="t">
+                <span class="platform-badge twitch">Twitch</span>
+              </button>
+              <button class="platform-option" data-platform="y">
+                <span class="platform-badge youtube">YouTube</span>
+              </button>
             </div>
-            <select id="setting-chzzk-quality" class="setting-select">
-              <option value="1080p">1080p</option>
-              <option value="720p">720p</option>
-              <option value="480p">480p</option>
-              <option value="360p">360p</option>
-              <option value="auto" selected>자동</option>
-            </select>
+          </div>
+          <div class="form-group">
+            <label id="add-modal-search-label">스트리머 검색</label>
+            <div class="search-input-wrapper">
+              <input type="text" id="add-modal-search" placeholder="ID 또는 이름으로 검색" autocomplete="off" />
+              <div id="add-modal-suggestions" class="modal-suggestions"></div>
+            </div>
+            <div id="add-modal-selected" class="selected-streamer-container"></div>
+            <p id="add-modal-notice" class="modal-notice hidden">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              방통실에 등록되지 않은 스트리머는 알림을 받을 수 없습니다.
+            </p>
+          </div>
+          <div class="form-group" id="add-modal-group-section">
+            <label>그룹 지정 <span class="label-optional">(선택사항)</span></label>
+            <div id="add-modal-groups" class="add-modal-groups"></div>
+            <button id="add-modal-create-group" class="btn-text-action">+ 새 그룹 만들기</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="modal-actions" style="width: 100%;">
+            <button id="add-streamer-cancel" class="btn-secondary btn-sm">취소</button>
+            <button id="add-streamer-confirm" class="btn-primary btn-sm" disabled>추가</button>
           </div>
         </div>
       </div>
