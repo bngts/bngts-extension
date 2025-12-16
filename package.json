@@ -1,6 +1,6 @@
 {
   "name": "bngts-extension",
-  "version": "3.2.3",
+  "version": "3.2.4",
   "description": "방통실(bngts.com) 멀티뷰에서 치지직·SOOP 로그인을 자동 연동하고 플레이어를 최적화합니다.",
   "private": true,
   "type": "module",
