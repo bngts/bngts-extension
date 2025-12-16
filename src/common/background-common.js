@@ -30,6 +30,7 @@ const COOKIES = [
 const partitionKeys = [
   { topLevelSite: "https://mul.live" },
   { topLevelSite: "https://bngts.com" },
+  { topLevelSite: "http://localhost:50001" },
 ];
 
 const API_BASE = "https://bngts.com/api";
@@ -48,6 +49,7 @@ const checkPermission = async () => {
       "*://*.naver.com/*",
       "*://*.chzzk.naver.com/*",
       "*://*.sooplive.co.kr/*",
+      "*://localhost:50001/*",
     ],
   });
   if (!granted) {
@@ -92,16 +94,22 @@ const updateBadge = async () => {
 };
 
 const sendLiveNotification = async (streamerId, streamerInfo) => {
-  const { settings, data } = await browserAPI.storage.local.get({
+  const { settings, data, notificationHistory = [] } = await browserAPI.storage.local.get({
     settings: { notification: false, tooltip: true },
     data: {},
+    notificationHistory: [],
   });
 
+  // 전역 알림 설정 확인
   if (!settings.notification) return;
+
+  // 스트리머별 알림 설정 확인
+  if (data[streamerId]?.notificationEnabled === false) return;
 
   const nick = data[streamerId]?.nick || streamerInfo.user_nick || streamerId;
   const platform = streamerId.startsWith("c:") ? "치지직" : "SOOP";
 
+  // 브라우저 알림 보내기
   browserAPI.notifications.create(`live-${streamerId}`, {
     type: "basic",
     iconUrl: "icon128.png",
@@ -109,6 +117,20 @@ const sendLiveNotification = async (streamerId, streamerInfo) => {
     message: streamerInfo.broad_title || `${platform}에서 방송을 시작했습니다.`,
     priority: 2,
   });
+
+  // 알림 히스토리에 저장
+  const newNotification = {
+    id: `${streamerId}-${Date.now()}`,
+    streamerId,
+    streamerName: nick,
+    title: streamerInfo.broad_title || `${platform}에서 방송을 시작했습니다.`,
+    timestamp: Date.now(),
+    read: false,
+  };
+
+  // 최대 50개 유지
+  const updatedHistory = [newNotification, ...notificationHistory].slice(0, 50);
+  await browserAPI.storage.local.set({ notificationHistory: updatedHistory });
 };
 
 const updateLiveStatusCache = async () => {

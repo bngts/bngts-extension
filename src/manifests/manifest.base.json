@@ -22,7 +22,8 @@
     "*://*.naver.com/*",
     "*://*.sooplive.co.kr/*",
     "*://*.mul.live/*",
-    "*://*.bngts.com/*"
+    "*://*.bngts.com/*",
+    "http://localhost/*"
   ],
   "action": {
     "default_popup": "popup.html"
@@ -34,11 +35,7 @@
         "chzzk.js"
       ],
       "matches": [
-        "*://chzzk.naver.com/*",
-        "*://mul.live/*",
-        "*://www.mul.live/*",
-        "*://bngts.com/*",
-        "*://www.bngts.com/*"
+        "*://chzzk.naver.com/*"
       ],
       "world": "MAIN"
     },
@@ -48,11 +45,7 @@
         "soop.js"
       ],
       "matches": [
-        "*://play.sooplive.co.kr/*",
-        "*://mul.live/*",
-        "*://www.mul.live/*",
-        "*://bngts.com/*",
-        "*://www.bngts.com/*"
+        "*://play.sooplive.co.kr/*"
       ],
       "run_at": "document_start",
       "world": "MAIN"

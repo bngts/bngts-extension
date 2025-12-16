@@ -73,7 +73,7 @@
 try {
   window.parent.location.hostname;
 } catch {
-  const ALLOWED_ORIGINS = ["https://mul.live", "https://bngts.com"];
+  const ALLOWED_ORIGINS = ["https://mul.live", "https://bngts.com", "http://localhost:50001"];
   const getParentOrigin = () => {
     try {
       const ref = document.referrer;
@@ -107,7 +107,9 @@ try {
   if (params.get("vtype") === "chat") {
     if (window.opener == null) {
       const id = location.pathname.split("/")[1];
-      window.opener = window.parent[isNaN(Number(id)) ? id : `#${id}`];
+      try {
+        window.opener = window.parent[isNaN(Number(id)) ? id : `#${id}`];
+      } catch {}
 
       document.documentElement.setAttribute("dark", "true");
 
