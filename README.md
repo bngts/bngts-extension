@@ -71,11 +71,11 @@
 
 ### Chrome 웹 스토어
 
-[Chrome 웹 스토어에서 설치](https://chromewebstore.google.com/) (링크 추가 예정)
+[Chrome 웹 스토어에서 설치](https://chromewebstore.google.com/detail/djadgfagoojilmfpnjnjdlippnfkblkk)
 
 ### Firefox Add-ons
 
-[Firefox Add-ons에서 설치](https://addons.mozilla.org/) (링크 추가 예정)
+[Firefox Add-ons에서 설치](https://addons.mozilla.org/)
 
 ### 수동 설치 (개발자 모드)
 
