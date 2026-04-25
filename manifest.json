@@ -27,7 +27,7 @@
   ],
   "host_permissions": [
     "*://*.naver.com/*",
-    "*://*.sooplive.co.kr/*",
+    "*://*.sooplive.com/*",
     "*://*.mul.live/*",
     "*://*.bngts.com/*"
   ],
@@ -61,7 +61,7 @@
         "soop.js"
       ],
       "matches": [
-        "*://play.sooplive.co.kr/*",
+        "*://play.sooplive.com/*",
         "*://mul.live/*",
         "*://www.mul.live/*",
         "*://bngts.com/*",
