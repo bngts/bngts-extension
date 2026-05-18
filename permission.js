@@ -7,6 +7,8 @@ document.getElementById("grant").addEventListener("click", () => {
         "*://*.naver.com/*",
         "*://*.chzzk.naver.com/*",
         "*://*.sooplive.co.kr/*",
+        "*://*.sooplive.com/*",
+        "*://ocean-archive.pages.dev/*",
       ],
     })
     .then((granted) => {

@@ -2,7 +2,7 @@
 
 > 현재 보고 있는 방송을 함께 봅니다. 치지직과 SOOP 로그인을 사용할 수 있도록 하며, 자동으로 멀티뷰를 위해 플레이어를 최적화합니다.
 
-이 확장 프로그램은 [방통실(bngts.com)](https://bngts.com/)과 [Mul.Live(mul.live)](https://mul.live/)에서 모두 사용 가능합니다.
+이 확장 프로그램은 [방통실(bngts.com)](https://bngts.com/), [Mul.Live(mul.live)](https://mul.live/), Sea Forest(ocean-archive.pages.dev)에서 모두 사용 가능합니다.
 
 ## 주요 기능
 
@@ -123,8 +123,10 @@ npm run publish:firefox
 
 - `*.naver.com` - 치지직 로그인 쿠키 접근
 - `*.sooplive.co.kr` - SOOP 로그인 쿠키 접근
+- `*.sooplive.com` - SOOP 로그인 쿠키 접근
 - `*.mul.live` - Mul.Live 콘텐츠 스크립트 실행
 - `*.bngts.com` - 방통실 콘텐츠 스크립트 실행
+- `ocean-archive.pages.dev` - Sea Forest 접근
 
 ## Fork 정보
 

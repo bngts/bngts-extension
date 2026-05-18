@@ -145,3 +145,5 @@ https://github.com/bngts/bngts-extension
 ⚠️ 안내사항
 
 본 확장 프로그램은 치지직, SOOP과 공식적인 관련이 없으며, 관련 상표는 각 소유자의 자산입니다. 본 확장 프로그램을 사용하여 발생하는 결과에 대한 모든 책임은 사용자에게 있습니다.
+
+이 확장 프로그램을 설치하면 방통실(bngts.com), mul.live, Sea Forest(ocean-archive.pages.dev)에서 사용할 수 있습니다.

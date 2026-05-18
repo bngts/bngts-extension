@@ -25,11 +25,27 @@ const COOKIES = [
     domain: ".sooplive.co.kr",
     url: "https://login.sooplive.co.kr/app/LoginAction.php",
   },
+  {
+    name: "AuthTicket",
+    domain: ".sooplive.com",
+    url: "https://login.sooplive.com/app/LoginAction.php",
+  },
+  {
+    name: "UserTicket",
+    domain: ".sooplive.com",
+    url: "https://login.sooplive.com/app/LoginAction.php",
+  },
+  {
+    name: "isBbs",
+    domain: ".sooplive.com",
+    url: "https://login.sooplive.com/app/LoginAction.php",
+  },
 ];
 
 const partitionKeys = [
   { topLevelSite: "https://mul.live" },
   { topLevelSite: "https://bngts.com" },
+  { topLevelSite: "https://ocean-archive.pages.dev" },
   { topLevelSite: "http://localhost:50001" },
 ];
 
@@ -49,6 +65,8 @@ const checkPermission = async () => {
       "*://*.naver.com/*",
       "*://*.chzzk.naver.com/*",
       "*://*.sooplive.co.kr/*",
+      "*://*.sooplive.com/*",
+      "*://ocean-archive.pages.dev/*",
       "*://localhost:50001/*",
     ],
   });
@@ -170,7 +188,7 @@ const handleNotificationClick = (notificationId) => {
     if (platform === "chzzk") {
       url = `https://chzzk.naver.com/live/${rawId}`;
     } else {
-      url = `https://play.sooplive.co.kr/${rawId}`;
+      url = `https://play.sooplive.com/${rawId}`;
     }
 
     browserAPI.tabs.create({ url });

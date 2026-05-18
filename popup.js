@@ -855,7 +855,7 @@
         if (platform === "c") {
           url = `https://chzzk.naver.com/live/${rawId}`;
         } else {
-          url = `https://play.sooplive.co.kr/${rawId}`;
+          url = `https://play.sooplive.com/${rawId}`;
         }
         chrome.tabs.create({ url });
       });

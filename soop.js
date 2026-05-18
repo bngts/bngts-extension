@@ -73,7 +73,12 @@
 try {
   window.parent.location.hostname;
 } catch {
-  const ALLOWED_ORIGINS = ["https://mul.live", "https://bngts.com", "http://localhost:50001"];
+  const ALLOWED_ORIGINS = [
+    "https://mul.live",
+    "https://bngts.com",
+    "https://ocean-archive.pages.dev",
+    "http://localhost:50001",
+  ];
   const getParentOrigin = () => {
     try {
       const ref = document.referrer;
@@ -123,7 +128,7 @@ try {
             for (const n of mutation.addedNodes) {
               if (n.querySelector?.("#layerLogin")) {
                 window.open(
-                  "https://login.sooplive.co.kr/afreeca/login.php",
+                  "https://login.sooplive.com/afreeca/login.php",
                   "_blank"
                 );
                 window.parent.postMessage(

@@ -52,5 +52,23 @@
       "urlFilter": "||localhost:50001",
       "resourceTypes": ["main_frame"]
     }
+  },
+  {
+    "id": 4,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "x-has-extension",
+          "operation": "set",
+          "value": "1"
+        }
+      ]
+    },
+    "condition": {
+      "urlFilter": "||ocean-archive.pages.dev",
+      "resourceTypes": ["main_frame"]
+    }
   }
 ]
