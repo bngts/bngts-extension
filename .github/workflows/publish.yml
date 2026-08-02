@@ -7,6 +7,15 @@ on:
         description: "The argument to npm version"
         default: "patch"
         required: true
+      target:
+        description: "Publish target"
+        default: "all"
+        required: true
+        type: choice
+        options:
+          - all
+          - chrome
+          - firefox
 
 jobs:
   publish:
@@ -39,9 +48,9 @@ jobs:
         if: ${{ github.event.inputs.version != 'none' }}
         run: |
           VERSION=$(jq -r ".version" package.json)
-          git config user.name "Jebibot"
-          git config user.email "83044352+jebibot@users.noreply.github.com"
-          git add *.json
+          git config user.name "bngts"
+          git config user.email "support@bngts.com"
+          git add package.json package-lock.json src/manifests/manifest.base.json
           git commit -m "v$VERSION"
           git tag -a "v$VERSION" -m "v$VERSION"
           git push --follow-tags
@@ -50,6 +59,7 @@ jobs:
         run: npm run build
 
       - name: Publish to Chrome Web Store
+        if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == 'chrome' }}
         run: |
           echo "${{ secrets.CHROME_CRX_KEY }}" > key.pem
           chmod 600 key.pem
@@ -61,9 +71,19 @@ jobs:
           REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           EXTENSION_ID: ${{ secrets.CHROME_APP_ID }}
 
-      - name: Publish to Firefox add-on
+      - name: Publish to Firefox Add-ons
+        if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == 'firefox' }}
         continue-on-error: true
         run: npm run publish:firefox
         env:
           WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
           WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-packages
+          path: |
+            dist/chrome.zip
+            dist/firefox.zip
+          retention-days: 30
