@@ -73,6 +73,22 @@
             </button>
           </header>
 
+          <section id="playback-status-card" class="playback-status-card hidden" aria-live="polite">
+            <div class="playback-status-header">
+              <div>
+                <strong>시청 환경 확인</strong>
+                <span>로그인 연동 또는 광고 관련 확인이 필요합니다.</span>
+              </div>
+              <button id="refresh-playback-status" class="icon-btn" title="상태 다시 확인" aria-label="상태 다시 확인">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 4 23 10 17 10"/>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+              </button>
+            </div>
+            <div id="playback-status-list" class="playback-status-list"></div>
+          </section>
+
           <!-- 내 스트리머 목록 카드 -->
           <div class="setting-card streamer-list-card">
             <div class="card-header-row">

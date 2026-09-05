@@ -102,8 +102,109 @@
   const groupFilterSelect = document.getElementById("group-filter");
   const reloadBtn = document.getElementById("reload-btn");
   const toast = document.getElementById("toast");
+  const playbackStatusCard = document.getElementById("playback-status-card");
+  const playbackStatusList = document.getElementById("playback-status-list");
+  const refreshPlaybackStatusBtn = document.getElementById("refresh-playback-status");
 
   let isLoading = false;
+
+  const getCookie = (url, name) => chrome.cookies.get({ url, name });
+
+  const getSoopAccountStatus = async () => {
+    const response = await fetch("https://item.sooplive.com/quickview.php", {
+      credentials: "include",
+      cache: "no-store",
+    });
+    if (!response.ok) throw new Error(`SOOP status request failed: ${response.status}`);
+    const html = await response.text();
+    const loginMatch = html.match(/var\s+isLogin\s*=\s*['"]([^'"]*)['"]/);
+    if (!loginMatch) throw new Error("SOOP login status was not found");
+    const loggedIn = Boolean(loginMatch[1]);
+    if (!loggedIn) return { loggedIn: false, hasQuickView: null };
+
+    const quickViewMatch = html.match(/var\s+nQVGubun\s*=\s*parseInt\(['"](\d+)['"]\)/);
+    if (!quickViewMatch) throw new Error("SOOP QuickView status was not found");
+    return { loggedIn: true, hasQuickView: Number(quickViewMatch[1]) > 0 };
+  };
+
+  const renderPlaybackIssue = ({ platform, title, description, action, href }) => {
+    const item = document.createElement("div");
+    item.className = "playback-status-item";
+
+    const copy = document.createElement("div");
+    copy.className = "playback-status-copy";
+    const heading = document.createElement("strong");
+    heading.textContent = `${platform} · ${title}`;
+    const detail = document.createElement("span");
+    detail.textContent = description;
+    copy.append(heading, detail);
+
+    const link = document.createElement("a");
+    link.href = href;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = action;
+
+    item.append(copy, link);
+    playbackStatusList.appendChild(item);
+  };
+
+  const updatePlaybackStatus = async () => {
+    refreshPlaybackStatusBtn.classList.add("loading");
+    try {
+      const [soopStatus, naverAuth, naverSession] = await Promise.all([
+        getSoopAccountStatus(),
+        getCookie("https://nid.naver.com/", "NID_AUT"),
+        getCookie("https://nid.naver.com/", "NID_SES"),
+      ]);
+
+      const issues = [];
+      if (!soopStatus.loggedIn) {
+        issues.push({
+          platform: "SOOP",
+          title: "로그인 필요",
+          description: "SOOP 공식 계정 응답에서 로그아웃 상태로 확인됐습니다. 채팅 로그인 연동이 되지 않습니다.",
+          action: "로그인",
+          href: "https://login.sooplive.com/afreeca/login.php",
+        });
+      } else if (soopStatus.hasQuickView === false) {
+        issues.push({
+          platform: "SOOP",
+          title: "퀵뷰 미사용",
+          description: "SOOP 공식 계정 정보상 사용 중인 퀵뷰가 없습니다. 방송 입장 영상 광고가 표시될 수 있습니다.",
+          action: "퀵뷰 확인",
+          href: "https://item.sooplive.com/quickview.php",
+        });
+      }
+      if (!naverAuth || !naverSession) {
+        issues.push({
+          platform: "치지직",
+          title: "로그인 필요",
+          description: "네이버 로그인 쿠키가 없어 멀티뷰 채팅 로그인이 연동되지 않습니다.",
+          action: "로그인",
+          href: "https://nid.naver.com/nidlogin.login",
+        });
+      }
+      playbackStatusList.replaceChildren();
+      issues.forEach(renderPlaybackIssue);
+      playbackStatusCard.classList.toggle("hidden", issues.length === 0);
+    } catch {
+      playbackStatusList.replaceChildren();
+      renderPlaybackIssue({
+        platform: "확장 프로그램",
+        title: "상태 확인 실패",
+        description: "로그인 연결 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+        action: "방통실 열기",
+        href: "https://bngts.com/multiview",
+      });
+      playbackStatusCard.classList.remove("hidden");
+    } finally {
+      refreshPlaybackStatusBtn.classList.remove("loading");
+    }
+  };
+
+  refreshPlaybackStatusBtn.addEventListener("click", updatePlaybackStatus);
+  updatePlaybackStatus();
 
   // ===== 페이지 네비게이션 =====
   const navItems = document.querySelectorAll(".nav-item");

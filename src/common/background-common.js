@@ -41,6 +41,43 @@ const CHECK_INTERVAL = 5 * 60 * 1000; // 5분
 // 브라우저 API 추상화 (Chrome은 chrome, Firefox는 browser 사용 가능하지만 chrome도 지원)
 const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 
+const getSoopAccountStatus = async () => {
+  const response = await fetch("https://item.sooplive.com/quickview.php", {
+    credentials: "include",
+    cache: "no-store",
+  });
+  if (!response.ok) throw new Error(`SOOP status request failed: ${response.status}`);
+  const html = await response.text();
+  const loginMatch = html.match(/var\s+isLogin\s*=\s*['"]([^'"]*)['"]/);
+  if (!loginMatch) throw new Error("SOOP login status was not found");
+  const loggedIn = Boolean(loginMatch[1]);
+  if (!loggedIn) return { loggedIn: false, hasQuickView: null };
+  const quickViewMatch = html.match(/var\s+nQVGubun\s*=\s*parseInt\(['"](\d+)['"]\)/);
+  if (!quickViewMatch) throw new Error("SOOP QuickView status was not found");
+  return { loggedIn: true, hasQuickView: Number(quickViewMatch[1]) > 0 };
+};
+
+const getPlaybackStatus = async () => {
+  const [soop, naverAuth, naverSession] = await Promise.all([
+    getSoopAccountStatus(),
+    browserAPI.cookies.get({ url: "https://nid.naver.com/", name: "NID_AUT" }),
+    browserAPI.cookies.get({ url: "https://nid.naver.com/", name: "NID_SES" }),
+  ]);
+  return {
+    soop,
+    chzzk: { loggedIn: Boolean(naverAuth && naverSession) },
+    checkedAt: Date.now(),
+  };
+};
+
+browserAPI.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message?.type !== "bngts:get-playback-status") return undefined;
+  getPlaybackStatus()
+    .then((status) => sendResponse({ ok: true, status }))
+    .catch((error) => sendResponse({ ok: false, error: error?.message || "status check failed" }));
+  return true;
+});
+
 // 공통 함수들
 const checkPermission = async () => {
   const granted = await browserAPI.permissions.contains({

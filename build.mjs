@@ -16,6 +16,7 @@ const PLATFORMS = ["chrome", "firefox"];
 const COMMON_FILES = [
   "chzzk.js",
   "soop.js",
+  "bngts-status.js",
   "popup.html",
   "popup.js",
   "popup.css",
