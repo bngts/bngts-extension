@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>방통실 Plus</title>
     <link rel="stylesheet" href="popup.css" />
+    <link rel="stylesheet" href="playback-status.css" />
   </head>
   <body>
     <div class="app-container">
@@ -73,21 +74,8 @@
             </button>
           </header>
 
-          <section id="playback-status-card" class="playback-status-card hidden" aria-live="polite">
-            <div class="playback-status-header">
-              <div>
-                <strong>시청 환경 확인</strong>
-                <span>로그인 연동 또는 광고 관련 확인이 필요합니다.</span>
-              </div>
-              <button id="refresh-playback-status" class="icon-btn" title="상태 다시 확인" aria-label="상태 다시 확인">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="23 4 23 10 17 10"/>
-                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-                </svg>
-              </button>
-            </div>
-            <div id="playback-status-list" class="playback-status-list"></div>
-          </section>
+          <p id="playback-status-note" class="bngts-ad-empty" role="status"></p>
+          <button id="restore-playback-alerts" class="bngts-ad-text-button hidden" type="button">로그인 안내 다시 보기</button>
 
           <!-- 내 스트리머 목록 카드 -->
           <div class="setting-card streamer-list-card">
@@ -383,7 +371,30 @@
       </div>
     </div>
 
+    <dialog id="playback-sheet" class="playback-sheet" aria-labelledby="playback-sheet-title" aria-describedby="playback-sheet-description">
+      <div class="playback-sheet-handle" aria-hidden="true"></div>
+      <header class="playback-sheet-header">
+        <div><h3 id="playback-sheet-title">채팅 로그인 안내</h3><p id="playback-sheet-description">로그인은 각 플랫폼의 공식 사이트에서 진행해요.</p></div>
+        <div class="playback-sheet-controls">
+          <button id="refresh-playback-status" class="icon-btn" type="button" title="로그인 상태 다시 확인" aria-label="로그인 상태 다시 확인">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          </button>
+          <button id="close-playback-sheet" class="icon-btn" type="button" aria-label="로그인 안내 닫고 다시 표시하지 않기" autofocus>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg>
+          </button>
+        </div>
+      </header>
+      <div id="playback-status-list"></div>
+      <p id="playback-sheet-feedback" class="bngts-ad-empty" role="status"></p>
+      <footer class="playback-sheet-footer">
+        <p id="playback-sheet-note">닫으면 다시 표시하지 않아요.</p>
+        <button id="ignore-all-playback-alerts" class="btn-secondary btn-sm" type="button">무시</button>
+      </footer>
+    </dialog>
+
     <script src="lib/Sortable.min.js"></script>
+    <script src="playback-status-model.js"></script>
+    <script src="popup-login-ui.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>

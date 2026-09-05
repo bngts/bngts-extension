@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "방통실 Plus - 치지직 & SOOP 로그인 연동",
   "short_name": "방통실 Plus",
-  "version": "3.2.7",
+  "version": "3.2.8",
   "description": "방통실(bngts.com) 멀티뷰에서 치지직·SOOP 로그인을 자동 연동하고 플레이어를 최적화합니다. 스트리머 즐겨찾기, 방송 알림 기능을 제공합니다.",
   "icons": {
     "16": "icon16.png",
@@ -32,12 +32,27 @@
   "content_scripts": [
     {
       "js": [
+        "playback-status-model.js",
+        "playback-status-ui.js",
         "bngts-status.js"
       ],
       "matches": [
         "*://*.bngts.com/*",
         "http://localhost/*"
       ],
+      "run_at": "document_start"
+    },
+    {
+      "all_frames": true,
+      "js": ["playback-status-main-model.js", "soop-playback-main.js"],
+      "matches": ["https://play.sooplive.com/*", "https://vod.sooplive.com/player/*"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "all_frames": true,
+      "js": ["playback-status-model.js", "soop-playback-isolated.js"],
+      "matches": ["https://play.sooplive.com/*", "https://vod.sooplive.com/player/*"],
       "run_at": "document_start"
     },
     {
@@ -82,6 +97,10 @@
       "run_at": "document_start"
     }
   ],
+  "web_accessible_resources": [{
+    "resources": ["playback-status.css", "brand/soop.svg", "brand/chzzk.png"],
+    "matches": ["https://bngts.com/*", "https://www.bngts.com/*", "http://localhost/*"]
+  }],
   "declarative_net_request": {
     "rule_resources": [
       {

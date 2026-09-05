@@ -102,109 +102,117 @@
   const groupFilterSelect = document.getElementById("group-filter");
   const reloadBtn = document.getElementById("reload-btn");
   const toast = document.getElementById("toast");
-  const playbackStatusCard = document.getElementById("playback-status-card");
   const playbackStatusList = document.getElementById("playback-status-list");
   const refreshPlaybackStatusBtn = document.getElementById("refresh-playback-status");
 
   let isLoading = false;
 
-  const getCookie = (url, name) => chrome.cookies.get({ url, name });
-
-  const getSoopAccountStatus = async () => {
-    const response = await fetch("https://item.sooplive.com/quickview.php", {
-      credentials: "include",
-      cache: "no-store",
-    });
-    if (!response.ok) throw new Error(`SOOP status request failed: ${response.status}`);
-    const html = await response.text();
-    const loginMatch = html.match(/var\s+isLogin\s*=\s*['"]([^'"]*)['"]/);
-    if (!loginMatch) throw new Error("SOOP login status was not found");
-    const loggedIn = Boolean(loginMatch[1]);
-    if (!loggedIn) return { loggedIn: false, hasQuickView: null };
-
-    const quickViewMatch = html.match(/var\s+nQVGubun\s*=\s*parseInt\(['"](\d+)['"]\)/);
-    if (!quickViewMatch) throw new Error("SOOP QuickView status was not found");
-    return { loggedIn: true, hasQuickView: Number(quickViewMatch[1]) > 0 };
-  };
-
-  const renderPlaybackIssue = ({ platform, title, description, action, href }) => {
-    const item = document.createElement("div");
-    item.className = "playback-status-item";
-
-    const copy = document.createElement("div");
-    copy.className = "playback-status-copy";
-    const heading = document.createElement("strong");
-    heading.textContent = `${platform} · ${title}`;
-    const detail = document.createElement("span");
-    detail.textContent = description;
-    copy.append(heading, detail);
-
-    const link = document.createElement("a");
-    link.href = href;
-    link.target = "_blank";
-    link.rel = "noopener";
-    link.textContent = action;
-
-    item.append(copy, link);
-    playbackStatusList.appendChild(item);
-  };
-
-  const updatePlaybackStatus = async () => {
-    refreshPlaybackStatusBtn.classList.add("loading");
+  const playbackStatusNote = document.getElementById("playback-status-note");
+  const statusAPI = typeof browser !== "undefined" ? browser : chrome;
+  const playbackSheet = document.getElementById("playback-sheet");
+  const playbackFeedback = document.getElementById("playback-sheet-feedback");
+  const ignoreAllPlaybackBtn = document.getElementById("ignore-all-playback-alerts");
+  const restorePlaybackBtn = document.getElementById("restore-playback-alerts");
+  let popupAlertKeys = [];
+  let dismissPending = false;
+  const dismissLoginSheet = async () => {
+    if (dismissPending) return;
+    dismissPending = true;
     try {
-      const [soopStatus, naverAuth, naverSession] = await Promise.all([
-        getSoopAccountStatus(),
-        getCookie("https://nid.naver.com/", "NID_AUT"),
-        getCookie("https://nid.naver.com/", "NID_SES"),
-      ]);
-
-      const issues = [];
-      if (!soopStatus.loggedIn) {
-        issues.push({
-          platform: "SOOP",
-          title: "로그인 필요",
-          description: "SOOP 공식 계정 응답에서 로그아웃 상태로 확인됐습니다. 채팅 로그인 연동이 되지 않습니다.",
-          action: "로그인",
-          href: "https://login.sooplive.com/afreeca/login.php",
-        });
-      } else if (soopStatus.hasQuickView === false) {
-        issues.push({
-          platform: "SOOP",
-          title: "퀵뷰 미사용",
-          description: "SOOP 공식 계정 정보상 사용 중인 퀵뷰가 없습니다. 방송 입장 영상 광고가 표시될 수 있습니다.",
-          action: "퀵뷰 확인",
-          href: "https://item.sooplive.com/quickview.php",
-        });
-      }
-      if (!naverAuth || !naverSession) {
-        issues.push({
-          platform: "치지직",
-          title: "로그인 필요",
-          description: "네이버 로그인 쿠키가 없어 멀티뷰 채팅 로그인이 연동되지 않습니다.",
-          action: "로그인",
-          href: "https://nid.naver.com/nidlogin.login",
-        });
-      }
-      playbackStatusList.replaceChildren();
-      issues.forEach(renderPlaybackIssue);
-      playbackStatusCard.classList.toggle("hidden", issues.length === 0);
+      await changePlaybackAlerts(null, false, popupAlertKeys);
+      playbackSheet.close();
     } catch {
-      playbackStatusList.replaceChildren();
-      renderPlaybackIssue({
-        platform: "확장 프로그램",
-        title: "상태 확인 실패",
-        description: "로그인 연결 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.",
-        action: "방통실 열기",
-        href: "https://bngts.com/multiview",
-      });
-      playbackStatusCard.classList.remove("hidden");
+      playbackFeedback.textContent = "닫기 상태를 저장하지 못했습니다. 다시 시도해 주세요.";
+    } finally { dismissPending = false; }
+  };
+  document.getElementById("close-playback-sheet").addEventListener("click", dismissLoginSheet);
+  playbackSheet.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    void dismissLoginSheet();
+  });
+  playbackSheet.addEventListener("close", () => {
+    if (!restorePlaybackBtn.classList.contains("hidden")) restorePlaybackBtn.focus();
+  });
+  // Closing the extension popup itself also acknowledges the visible login notices.
+  window.addEventListener("pagehide", () => {
+    if (!playbackSheet.open || !popupAlertKeys.length) return;
+    void statusAPI.runtime.sendMessage({
+      type: "bngts:ignore-playback-alert", keys: popupAlertKeys,
+    }).catch(() => {});
+  });
+  playbackSheet.addEventListener("click", (event) => {
+    if (event.target !== playbackSheet) return;
+    const rect = playbackSheet.getBoundingClientRect();
+    if (event.clientY < rect.top || event.clientX < rect.left || event.clientX > rect.right)
+      void dismissLoginSheet();
+  });
+
+  const changePlaybackAlerts = async (key, restore = false, keys) => {
+    const response = await statusAPI.runtime.sendMessage({
+      type: restore ? "bngts:restore-playback-alerts" : "bngts:ignore-playback-alert",
+      ...(keys ? { keys } : key ? { key } : { keys: popupAlertKeys }),
+    });
+    if (!response?.ok) throw new Error("ignore failed");
+    // A refresh already in flight could carry the previous ignore state.
+    await statusPending;
+    return updatePlaybackStatus();
+  };
+  let statusPending = null;
+  const updatePlaybackStatus = () => {
+    if (statusPending) return statusPending;
+    statusPending = readPlaybackStatus().finally(() => { statusPending = null; });
+    return statusPending;
+  };
+  const readPlaybackStatus = async () => {
+    refreshPlaybackStatusBtn.classList.add("loading");
+    refreshPlaybackStatusBtn.disabled = true;
+    let timeout;
+    try {
+      const response = await Promise.race([
+        statusAPI.runtime.sendMessage({ type: "bngts:get-login-status" }),
+        new Promise((_, reject) => { timeout = setTimeout(() => reject(new Error("timeout")), 4000); }),
+      ]);
+      if (!response?.ok || response.status?.schemaVersion !== 2) throw new Error("unavailable");
+      const alerts = globalThis.BngtsPlayback.loginAlertsForStatus(response.status);
+      popupAlertKeys = alerts.map((alert) => alert.key);
+      globalThis.BngtsLoginUI.render(playbackStatusList, alerts);
+      const hasIgnored = response.status.ignored?.all || response.status.ignored?.keys?.length > 0;
+      restorePlaybackBtn.classList.toggle("hidden", !hasIgnored);
+      ignoreAllPlaybackBtn.disabled = alerts.length === 0;
+      playbackFeedback.textContent = alerts.length ? "" : "표시할 로그인 안내가 없습니다.";
+      playbackStatusNote.textContent = [response.status.soop, response.status.chzzk].some((platform) => platform.loggedIn === null) ?
+        "일부 로그인 상태를 확인하지 못했습니다." : "";
+      if (!alerts.length && playbackSheet.open) playbackSheet.close();
+      else if (alerts.length && !playbackSheet.open && !dismissPending) playbackSheet.showModal();
+    } catch {
+      globalThis.BngtsLoginUI.render(playbackStatusList, []);
+      restorePlaybackBtn.classList.add("hidden");
+      ignoreAllPlaybackBtn.disabled = true;
+      playbackFeedback.textContent = "로그인 상태를 확인하지 못했습니다. 다시 확인해 주세요.";
+      playbackStatusNote.textContent = "로그인 상태를 확인하지 못했습니다. 로그아웃이라는 뜻은 아닙니다.";
     } finally {
+      clearTimeout(timeout);
       refreshPlaybackStatusBtn.classList.remove("loading");
+      refreshPlaybackStatusBtn.disabled = false;
     }
   };
 
+  for (const [button, restore] of [[ignoreAllPlaybackBtn, false], [restorePlaybackBtn, true]]) {
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      try {
+        await changePlaybackAlerts(null, restore);
+        if (!restore) playbackSheet.close();
+      } catch {
+        playbackFeedback.textContent = "처리하지 못했습니다. 다시 시도해 주세요.";
+        playbackStatusNote.textContent = playbackFeedback.textContent;
+      } finally { button.disabled = !restore && popupAlertKeys.length === 0; }
+    });
+  }
+
   refreshPlaybackStatusBtn.addEventListener("click", updatePlaybackStatus);
   updatePlaybackStatus();
+  setInterval(() => { if (!document.hidden) updatePlaybackStatus(); }, 4000);
 
   // ===== 페이지 네비게이션 =====
   const navItems = document.querySelectorAll(".nav-item");

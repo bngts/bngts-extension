@@ -17,6 +17,14 @@ const COMMON_FILES = [
   "chzzk.js",
   "soop.js",
   "bngts-status.js",
+  "playback-status-model.js",
+  "playback-status-ui.js",
+  "popup-login-ui.js",
+  "brand/soop.svg",
+  "brand/chzzk.png",
+  "playback-status.css",
+  "soop-playback-main.js",
+  "soop-playback-isolated.js",
   "popup.html",
   "popup.js",
   "popup.css",
@@ -84,6 +92,11 @@ const buildScript = (scriptName, platform, destDir) => {
   const platformPath = path.join(__dirname, "src", platform, `${scriptName}-${platform}.js`);
 
   let content = "";
+  if (scriptName === "background") {
+    for (const file of ["playback-status-model.js", "src/common/playback-status-background.js"]) {
+      content += fs.readFileSync(path.join(__dirname, file), "utf-8") + "\n\n";
+    }
+  }
 
   // 공통 코드 읽기
   if (fs.existsSync(commonPath)) {
@@ -150,6 +163,9 @@ const buildPlatform = async (platform) => {
       copyFile(src, path.join(distDir, file));
     }
   }
+  // Chromium deduplicates a content-script filename across worlds in the same frame.
+  // Use a separate built filename for MAIN; the source of the rules stays shared.
+  copyFile(path.join(__dirname, "playback-status-model.js"), path.join(distDir, "playback-status-main-model.js"));
 
   // 2. lib 디렉토리 복사
   const libSrc = path.join(__dirname, LIB_DIR);
