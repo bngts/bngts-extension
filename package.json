@@ -1,17 +1,21 @@
 {
   "name": "bngts-extension",
-  "version": "3.2.8",
+  "version": "3.2.12",
   "description": "방통실(bngts.com) 멀티뷰에서 치지직·SOOP 로그인을 자동 연동하고 플레이어를 최적화합니다.",
   "private": true,
   "type": "module",
   "scripts": {
+    "auth:chrome": "node bin/auth-chrome.mjs",
     "test": "node --test tests/*.test.mjs",
     "build": "node build.mjs",
     "build:chrome": "node build.mjs --platform=chrome",
     "build:firefox": "node build.mjs --platform=firefox",
     "postversion": "node bin/sync-version.mjs",
-    "publish:chrome": "google-chrome --headless --no-sandbox --disable-crash-reporter --no-crashpad --pack-extension=./dist/chrome --pack-extension-key=key.pem && mv dist/chrome.crx dist/ 2>/dev/null || true && node bin/upload.mjs",
-    "publish:firefox": "cd dist/firefox && web-ext sign --channel listed --approval-timeout 60000"
+    "publish:chrome": "node bin/publish.mjs chrome",
+    "publish:firefox": "node bin/publish.mjs firefox",
+    "publish:stores": "node bin/publish.mjs all",
+    "publish:check": "node bin/publish.mjs all --dry-run",
+    "upload:chrome": "node bin/publish.mjs chrome --upload-only"
   },
   "devDependencies": {
     "archiver": "^7.0.1",

@@ -838,23 +838,6 @@
   });
 
   // ===== 설정 =====
-  const settingSoopQuality = document.getElementById("setting-soop-quality");
-  const settingChzzkQuality = document.getElementById("setting-chzzk-quality");
-
-  // 설정 UI 초기화
-  settingSoopQuality.value = settings.soopQuality;
-  settingChzzkQuality.value = settings.chzzkQuality;
-
-  settingSoopQuality.addEventListener("change", async (e) => {
-    settings.soopQuality = e.target.value;
-    await chrome.storage.local.set({ settings });
-  });
-
-  settingChzzkQuality.addEventListener("change", async (e) => {
-    settings.chzzkQuality = e.target.value;
-    await chrome.storage.local.set({ settings });
-  });
-
   // 알림 설정 토글
   const settingNotification = document.getElementById("setting-notification");
   settingNotification.checked = settings.notification;

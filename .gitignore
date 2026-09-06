@@ -78,6 +78,11 @@ web_modules/
 .env.test.local
 .env.production.local
 .env.local
+.env.*
+!.env.example
+.env.store
+.env.store.*
+!.env.store.example
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -132,5 +137,8 @@ dist
 *.zip
 *.crx
 *.pem
+*.key
+*.p12
+*.pfx
 dist
 _metadata

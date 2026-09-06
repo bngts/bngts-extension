@@ -15,7 +15,11 @@ const VERSION = pkg.version;
 const PLATFORMS = ["chrome", "firefox"];
 const COMMON_FILES = [
   "chzzk.js",
+  "chzzk-quality.js",
   "soop.js",
+  "soop-audio-recovery.js",
+  "soop-loading-recovery.js",
+  "soop-quality.js",
   "bngts-status.js",
   "playback-status-model.js",
   "playback-status-ui.js",

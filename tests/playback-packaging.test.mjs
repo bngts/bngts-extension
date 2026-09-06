@@ -5,6 +5,15 @@ const manifest = JSON.parse(
   fs.readFileSync(new URL("../src/manifests/manifest.base.json", import.meta.url), "utf8")
 );
 
+test("every new SOOP frame automatically installs both playback fixes", () => {
+  const scripts = manifest.content_scripts.find(entry => entry.js.includes("soop.js"));
+  assert.equal(scripts.all_frames, true);
+  assert.equal(scripts.run_at, "document_start");
+  assert.equal(scripts.world, "MAIN");
+  assert.ok(scripts.js.includes("soop-audio-recovery.js"));
+  assert.ok(scripts.js.includes("soop-loading-recovery.js"));
+});
+
 test("MAIN and isolated worlds use distinct filenames, not Chromium's deduplicated script", () => {
   const worlds = new Map();
   for (const entry of manifest.content_scripts) {
